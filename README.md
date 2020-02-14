@@ -9,6 +9,29 @@ you can see the real-time output of your Jekyll posts without waiting for HTML g
 ![screenshot](screenshot.png)
 
 
+With SSH port forwarding, it allows you to edit your website remotely.
+
+## Installation
+
+- Clone the repository to local file system
+```
+git clone https://github.com/xziyue/remotemd
+```
+
+- Download editor.md (with git submodules). You can also download it yourself,
+but please maintain the directory structure.
+```
+cd remotemd
+git submodule update --init --recursive
+```
+
+- Install editor.md (not mandatory)
+
+```
+cd editor.md
+npm install
+```
+
 ## Usage
 
 - Run the server for a particular file:
