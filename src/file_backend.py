@@ -1,9 +1,8 @@
 import os
 import json
-
-def _assert(pred, hint):
-    if not pred:
-        raise AssertionError(hint)
+from src.common_def import *
+from src.common_def import _assert
+import urllib
 
 class FileBackend:
 
@@ -26,7 +25,8 @@ class FileBackend:
     def update_file(self, jsonStr):
         val = json.loads(jsonStr)
         _assert('filename' in val and 'content' in val, 'invalid JSON response')
-        _assert(self.filename == val['filename'], 'inconsistent filename: expected "{}", get "{}"'.format(self.filename, val['filename']))
+        unquoteFilename = urllib.parse.unquote(val['filename'])
+        _assert(self.filename == unquoteFilename, 'inconsistent filename: expected "{}", got "{}"'.format(self.filename, val['filename']))
         self.check_file()
         with open(self.filename, 'w') as outfile:
             outfile.write(val['content'])

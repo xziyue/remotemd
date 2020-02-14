@@ -3,7 +3,10 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
-<title>Alan Xiang’s Blog | Enjoy your transient life.</title>
+<title>RemoteMD</title>
+
+
+!!!!head
 
 <link rel="stylesheet" href="editor.md/css/editormd.min.css" />
 
@@ -25,13 +28,10 @@
 
 	<div style="margin: auto; " id="editor">
     <!-- Tips: Editor.md can auto append a `<textarea>` tag -->
-    <textarea>### Hello Editor.md !</textarea>
+    <textarea>!!!!content</textarea>
 	</div>
 
 	<script type="text/javascript">
-    window.onbeforeunload = function(){
-    return false;
-    };
 
     function get_width(){
         return $(window).width();
@@ -49,6 +49,7 @@
             width: get_width(),
             height: get_height(),
             tex: true,
+            htmlDecode: true,
             // markdown: "xxxx",     // dynamic set Markdown text
             path : "editor.md/lib/",  // Autoload modules mode, codemirror, marked... dependents libs path
             onchange : function () {
@@ -75,7 +76,7 @@
 
                 // send POST request to the server
                 var resultDict = {
-                    "filename" : decodeURIComponent(document.getElementById("source-filename").innerHTML),
+                    "filename" : document.getElementById("source-filename").innerHTML,
                     "content" : editor.getMarkdown()
                 };
 
@@ -85,14 +86,31 @@
                 var url = 'save_content.do';
                 http.open('POST', url, true);
                 http.setRequestHeader('Content-type', 'application/json');
-                http.send(resultJSON);
 
-                //fileSynced = true;
-                //document.getElementById('file-status').innerHTML = "(saved)";
+                http.onreadystatechange = function() {//Call a function when the state changes.
+                    if(http.readyState == 4) {
+                        if(http.status == 200){
+                            // saving is successful
+                            fileSynced = true;
+                            document.getElementById('file-status').innerHTML = "(saved)";
+                        }else{
+                            alert("An exception occured during saving, the text might not be saved! Detail: \n" + http.statusText);
+                        }
+
+                    }
+                };
+
+                http.send(resultJSON);
             }
             break;
         }
     }
+
+    $(window.onbeforeunload = function(){
+        if(!fileSynced){
+            return 'Are you sure to quit? Unsaved changes might be lost!';
+        }
+    });
 
 
 });
