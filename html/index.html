@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Alan Xiang’s Blog | Enjoy your transient life.</title>
+
+<link rel="stylesheet" href="editor.md/css/editormd.min.css" />
+
+
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+
+<script src="editor.md/editormd.min.js"></script>
+<script src="editor.md/languages/en.js"></script>
+</head>
+
+<body>
+
+    <div style="padding: 10px; font-size: large;" id="info">
+        <span id="source-filename">!!!!filename</span>&nbsp;<span id="file-status"></span>
+	</div>
+
+	<div style="margin: auto; " id="editor">
+    <!-- Tips: Editor.md can auto append a `<textarea>` tag -->
+    <textarea>### Hello Editor.md !</textarea>
+	</div>
+
+	<script type="text/javascript">
+    window.onbeforeunload = function(){
+    return false;
+    };
+
+    function get_width(){
+        return $(window).width();
+    }
+
+    function get_height() {
+         return ($(window).height() - $("#info").height()) * 0.9;
+    }
+
+    var editor;
+    var fileSynced = true;
+
+    $(function() {
+        editor = editormd("editor", {
+            width: get_width(),
+            height: get_height(),
+            tex: true,
+            // markdown: "xxxx",     // dynamic set Markdown text
+            path : "editor.md/lib/",  // Autoload modules mode, codemirror, marked... dependents libs path
+            onchange : function () {
+                if(fileSynced){
+                    fileSynced = false;
+                    document.getElementById('file-status').innerHTML = "(unsaved changes)";
+                }
+            }
+        });
+    });
+
+    window.onresize = function() {
+        editor.resize(get_width(), get_height());
+    };
+
+    // overload ctrl+s behavior
+    $(window).bind('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+        case 's':
+            event.preventDefault();
+            // TODO: save the file here!
+            if(!fileSynced){
+                fileSynced = true;
+                document.getElementById('file-status').innerHTML = "(saved)";
+            }
+            break;
+        }
+    }
+
+
+});
+
+
+	</script>
+</body>
+
+</html>
