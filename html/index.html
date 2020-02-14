@@ -72,8 +72,23 @@
             event.preventDefault();
             // TODO: save the file here!
             if(!fileSynced){
-                fileSynced = true;
-                document.getElementById('file-status').innerHTML = "(saved)";
+
+                // send POST request to the server
+                var resultDict = {
+                    "filename" : decodeURIComponent(document.getElementById("source-filename").innerHTML),
+                    "content" : editor.getMarkdown()
+                };
+
+                var resultJSON = JSON.stringify(resultDict);
+
+                var http = new XMLHttpRequest();
+                var url = 'save_content.do';
+                http.open('POST', url, true);
+                http.setRequestHeader('Content-type', 'application/json');
+                http.send(resultJSON);
+
+                //fileSynced = true;
+                //document.getElementById('file-status').innerHTML = "(saved)";
             }
             break;
         }
