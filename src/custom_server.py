@@ -53,13 +53,13 @@ class NewHRH(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path in ('/', ''):
             # check it it's trying to access the default page
-            content = self.remotemdCallback()
+            content = self.remotemdCallback().encode('utf8')
             self.send_response(HTTPStatus.OK, 'default page generation successful')
             self.send_header("Content-type", 'text/html; charset=UTF-8')
             self.send_header("Content-Length", str(len(content)))
             self.send_header("Last-Modified", self.date_time_string())
             self.end_headers()
-            self.wfile.write(content.encode('utf8'))
+            self.wfile.write(content)
         else:
             f = self.send_head()
             if f:
