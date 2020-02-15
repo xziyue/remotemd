@@ -89,9 +89,11 @@ class NewHRH(SimpleHTTPRequestHandler):
 
         if len(words) > 0:
             # process special cases
-            if words[0] in ['editor.md', 'dictionary']:
+            if words[0] in ['editor.md', 'remotemd-resource']:
                 # redirect editor.md requests to our directory
                 path = projectDir
+            elif words[0] == 'favicon.ico':
+                path = resDir
 
         for word in words:
             if os.path.dirname(word) or word in (os.curdir, os.pardir):

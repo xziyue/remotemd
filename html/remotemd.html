@@ -8,6 +8,8 @@
 
 !!!!head
 
+
+<link rel="icon" type="image/png" href="/remotemd-resource/favicon.png">
 <link rel="stylesheet" href="/editor.md/css/editormd.min.css" />
 
 <script
@@ -65,11 +67,11 @@
         // typo engine
         // get dictionaries
         var affHttp = new XMLHttpRequest();
-        affHttp.open( "GET", "/dictionary/en_US.aff", false);
+        affHttp.open( "GET", "/remotemd-resource/en_US.aff", false);
         affHttp.send();
 
         var dicHttp = new XMLHttpRequest();
-        dicHttp.open( "GET", "/dictionary/en_US.dic", false);
+        dicHttp.open( "GET", "/remotemd-resource/en_US.dic", false);
         dicHttp.send();
         glob.typo = new Typo('en_US', affHttp.responseText, dicHttp.responseText, { platform: 'any' });
 
