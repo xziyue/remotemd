@@ -18,9 +18,21 @@
 <script src="/editor.md/editormd.min.js"></script>
 <script src="/editor.md/languages/en.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/typo-js@1.1.0/typo.min.js"></script>
+
 </head>
 
+
 <body>
+
+    <!--Thanks to the spell check solution from https://gist.github.com/kofifus/4b2f79cadc871a29439d919692099406-->
+    <style>
+        .CodeMirror .cm-spell-error {
+            background-image: url("https://raw.githubusercontent.com/jwulf/typojs-project/master/public/images/red-wavy-underline.gif");
+            background-position: bottom;
+            background-repeat: repeat-x;
+        }
+    </style>
 
     <div style="padding: 10px; font-size: large;" id="info">
         <span id="source-filename">!!!!filename</span>&nbsp;<span id="file-status"></span>
@@ -34,8 +46,9 @@
 	<script type="text/javascript">
 
     var glob = this;
-    var editor = "none";
+    var editor;
     var fileSynced = true;
+    var typo;
 
     function get_width(){
         return $(window).width();
@@ -49,9 +62,21 @@
     $(function() {
         glob.fileSynced = true;
 
+        // typo engine
+        // get dictionaries
+        var affHttp = new XMLHttpRequest();
+        affHttp.open( "GET", "/dictionary/en_US.aff", false);
+        affHttp.send();
+
+        var dicHttp = new XMLHttpRequest();
+        dicHttp.open( "GET", "/dictionary/en_US.dic", false);
+        dicHttp.send();
+        glob.typo = new Typo('en_US', affHttp.responseText, dicHttp.responseText, { platform: 'any' });
+
         glob.editor = editormd("mdeditor", {
             width: get_width(),
             height: get_height(),
+            matchWordHighlight : false,
             tex: true,
             htmlDecode: true,
             // markdown: "xxxx",     // dynamic set Markdown text
@@ -61,11 +86,9 @@
                     glob.fileSynced = false;
                     document.getElementById('file-status').innerHTML = "(unsaved changes)";
                 }
-            },
-            onload: function () {
-
             }
         });
+
 
     });
 
@@ -73,11 +96,11 @@
         glob.editor.resize(get_width(), get_height());
     };
 
-    $(window.onbeforeunload = function(){
+    window.onbeforeunload = function(){
         if(!glob.fileSynced){
             return 'Are you sure to quit? Unsaved changes might be lost!';
         }
-    });
+    };
 
     // overload ctrl+s behavior
     $(window).bind('keydown', function(event) {
@@ -102,8 +125,8 @@
                 http.setRequestHeader('Content-type', 'application/json');
 
                 http.onreadystatechange = function() {//Call a function when the state changes.
-                    if(http.readyState == 4) {
-                        if(http.status == 200){
+                    if(http.readyState === 4) {
+                        if(http.status === 200){
                             // saving is successful
                             glob.fileSynced = true;
                             document.getElementById('file-status').innerHTML = "(saved)";
@@ -120,6 +143,41 @@
         }
     }
     });
+
+    function startSpellCheck(cm, typo) {
+        if (!cm || !typo) return; // sanity
+
+        startSpellCheck.ignoreDict = {}; // dictionary of ignored words
+
+        // Define what separates a word
+        var rx_word = '!\'\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~ ';
+
+        cm.spellcheckOverlay = {
+            token: function(stream) {
+                var ch = stream.peek();
+                var word = "";
+
+                if (rx_word.includes(ch) || ch === '\uE000' || ch === '\uE001') {
+                    stream.next();
+                    return null;
+                }
+
+                while ((ch = stream.peek()) && !rx_word.includes(ch)) {
+                    word += ch;
+                    stream.next();
+                }
+
+                if (!/[a-z]/i.test(word)) return null; // no letters
+                if (startSpellCheck.ignoreDict[word]) return null;
+                if (!typo.check(word)) return "spell-error"; // CSS class: cm-spell-error
+            }
+        };
+        cm.addOverlay(cm.spellcheckOverlay);
+    }
+
+    window.onload = function(e){
+        startSpellCheck(glob.editor.codeEditor, glob.typo);
+    }
 
 	</script>
 

@@ -1,6 +1,6 @@
 from http.server import HTTPServer, SimpleHTTPRequestHandler, HTTPStatus
 import os
-from src.correct_path import htmlDir, projectDir
+from src.correct_path import *
 import signal
 import posixpath
 import urllib
@@ -85,12 +85,13 @@ class NewHRH(SimpleHTTPRequestHandler):
         words = path.split('/')
         words = list(filter(None, words))
 
-        if len(words) > 0 and words[0] == 'editor.md':
-            # redirect editor.md requests to our directory
-            path = projectDir
-        else:
-            # leave the rest in source directory
-            path = self.baseDir
+        path = self.baseDir
+
+        if len(words) > 0:
+            # process special cases
+            if words[0] in ['editor.md', 'dictionary']:
+                # redirect editor.md requests to our directory
+                path = projectDir
 
         for word in words:
             if os.path.dirname(word) or word in (os.curdir, os.pardir):
@@ -105,13 +106,6 @@ class NewHRH(SimpleHTTPRequestHandler):
         return path
 
     def send_response(self, code, message=None):
-        """Add the response header to the headers buffer and log the
-        response code.
-
-        Also send two standard headers with the server software
-        version and the current date.
-
-        """
         self.log_request(code)
         self.send_response_only(code, message)
         self.send_header('Server', self.version_string() + ' (modified for RemoteMD)')
