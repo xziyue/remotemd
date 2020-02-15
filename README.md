@@ -60,6 +60,9 @@ and CSS here.
 
 `./test/gen_config.py` shows hot to generate the config file.
 
+## Changing editor.md options
+
+- Modify `./html/remotemd.html`
 
 ## Warnings
 - Liquid expressions will not be processed.
