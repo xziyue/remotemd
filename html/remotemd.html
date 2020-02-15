@@ -8,16 +8,22 @@
 
 !!!!head
 
-<link rel="stylesheet" href="editor.md/css/editormd.min.css" />
-
+<link rel="stylesheet" href="/editor.md/css/editormd.min.css" />
 
 <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
 
-<script src="editor.md/editormd.min.js"></script>
-<script src="editor.md/languages/en.js"></script>
+<script src="/editor.md/editormd.min.js"></script>
+<script src="/editor.md/languages/en.js"></script>
+
+<!--spell checker-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/codemirror.spell-checker/latest/spell-checker.min.css">
+<script src="https://cdn.jsdelivr.net/codemirror.spell-checker/latest/spell-checker.min.js"></script>
+
+
+
 </head>
 
 <body>
@@ -26,12 +32,16 @@
         <span id="source-filename">!!!!filename</span>&nbsp;<span id="file-status"></span>
 	</div>
 
-	<div style="margin: auto; " id="editor">
+	<div style="margin: auto; " id="mdeditor">
     <!-- Tips: Editor.md can auto append a `<textarea>` tag -->
-    <textarea>!!!!content</textarea>
+    <textarea id="textarea">!!!!content</textarea>
 	</div>
 
 	<script type="text/javascript">
+
+    var glob = this;
+    var editor = "none";
+    var fileSynced = true;
 
     function get_width(){
         return $(window).width();
@@ -41,11 +51,11 @@
          return ($(window).height() - $("#info").height()) * 0.9;
     }
 
-    var editor;
-    var fileSynced = true;
 
     $(function() {
-        editor = editormd("editor", {
+        glob.fileSynced = true;
+
+        glob.editor = editormd("mdeditor", {
             width: get_width(),
             height: get_height(),
             tex: true,
@@ -53,17 +63,35 @@
             // markdown: "xxxx",     // dynamic set Markdown text
             path : "editor.md/lib/",  // Autoload modules mode, codemirror, marked... dependents libs path
             onchange : function () {
-                if(fileSynced){
-                    fileSynced = false;
+                if(glob.fileSynced){
+                    glob.fileSynced = false;
                     document.getElementById('file-status').innerHTML = "(unsaved changes)";
                 }
+            },
+            onload: function () {
+                CodeMirrorSpellChecker({
+                    codeMirrorInstance: editormd.$CodeMirror,
+                });
+
+                editormd.$CodeMirror.fromTextArea(document.getElementById("textarea"), {
+                mode: "spell-checker",
+                backdrop: "gfm" // Your desired mode
+                });
+
             }
         });
+
     });
 
     window.onresize = function() {
-        editor.resize(get_width(), get_height());
+        glob.editor.resize(get_width(), get_height());
     };
+
+    $(window.onbeforeunload = function(){
+        if(!glob.fileSynced){
+            return 'Are you sure to quit? Unsaved changes might be lost!';
+        }
+    });
 
     // overload ctrl+s behavior
     $(window).bind('keydown', function(event) {
@@ -72,12 +100,12 @@
         case 's':
             event.preventDefault();
             // TODO: save the file here!
-            if(!fileSynced){
+            if(!window.fileSynced){
 
                 // send POST request to the server
                 var resultDict = {
                     "filename" : document.getElementById("source-filename").innerHTML,
-                    "content" : editor.getMarkdown()
+                    "content" : glob.editor.getMarkdown()
                 };
 
                 var resultJSON = JSON.stringify(resultDict);
@@ -91,7 +119,7 @@
                     if(http.readyState == 4) {
                         if(http.status == 200){
                             // saving is successful
-                            fileSynced = true;
+                            glob.fileSynced = true;
                             document.getElementById('file-status').innerHTML = "(saved)";
                         }else{
                             alert("An exception occured during saving, the text might not be saved! Detail: \n" + http.statusText);
@@ -105,18 +133,10 @@
             break;
         }
     }
-
-    $(window.onbeforeunload = function(){
-        if(!fileSynced){
-            return 'Are you sure to quit? Unsaved changes might be lost!';
-        }
     });
 
-
-});
-
-
 	</script>
+
 </body>
 
 </html>
