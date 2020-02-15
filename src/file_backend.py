@@ -19,7 +19,7 @@ class FileBackend:
 
     def read_file(self):
         self.check_file()
-        with open(self.filename, 'r') as infile:
+        with open(self.filename, 'r', encoding='utf8') as infile:
             data = infile.read()
         return data
 
@@ -29,5 +29,5 @@ class FileBackend:
         unquoteFilename = html.unescape(val['filename'])
         _assert(self.filename == unquoteFilename, 'inconsistent filename: expected "{}", got "{}"'.format(self.filename, val['filename']))
         self.check_file()
-        with open(self.filename, 'w') as outfile:
+        with open(self.filename, 'w', encoding='utf8') as outfile:
             outfile.write(val['content'])

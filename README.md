@@ -68,4 +68,5 @@ and CSS here.
 - Liquid expressions will not be processed.
 - Please make sure only one session is used. Opening multiple sessions at the same time will lead to inconsistencies.
 - Since editor.md also parses HTML tags, it is very dangerous for outsiders to have access to the editor. Always keep 
-the server private! 
+  the server private! 
+- Whenever an exception happens, please always make a backup version of the content in the editor! It is possible that the original file is completely truncated.
