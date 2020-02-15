@@ -1,6 +1,0 @@
-{
-  "ip": "127.0.0.1",
-  "port": 8088,
-  "base_dir": "~/website_jekyll_folder/_site",
-  "additional_head": "\n  <link rel=\"stylesheet\" href=\"/assets/css/styles.css\">\n  <link rel=\"stylesheet\" href=\"/assets/css/colorful.css\">\n  <link rel=\"stylesheet\" href=\"/assets/css/colorbox.css\">\n  <link rel=\"stylesheet\" href=\"/assets/css/button.css\">\n  <link rel=\"stylesheet\" href=\"/assets/css/pseudocode.min.css\">\n  "
-}
