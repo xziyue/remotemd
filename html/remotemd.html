@@ -18,12 +18,6 @@
 <script src="/editor.md/editormd.min.js"></script>
 <script src="/editor.md/languages/en.js"></script>
 
-<!--spell checker-->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/codemirror.spell-checker/latest/spell-checker.min.css">
-<script src="https://cdn.jsdelivr.net/codemirror.spell-checker/latest/spell-checker.min.js"></script>
-
-
-
 </head>
 
 <body>
@@ -69,14 +63,6 @@
                 }
             },
             onload: function () {
-                CodeMirrorSpellChecker({
-                    codeMirrorInstance: editormd.$CodeMirror,
-                });
-
-                editormd.$CodeMirror.fromTextArea(document.getElementById("textarea"), {
-                mode: "spell-checker",
-                backdrop: "gfm" // Your desired mode
-                });
 
             }
         });
