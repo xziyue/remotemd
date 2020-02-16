@@ -94,10 +94,6 @@
 
     });
 
-    window.onresize = function() {
-        glob.editor.resize(get_width(), get_height());
-    };
-
     window.onbeforeunload = function(){
         if(!glob.fileSynced){
             return 'Are you sure to quit? Unsaved changes might be lost!';
@@ -177,8 +173,14 @@
         cm.addOverlay(cm.spellcheckOverlay);
     }
 
+    function resizeEditor(){
+        glob.editor.resize(get_width(), get_height());
+    }
+
     window.onload = function(e){
         startSpellCheck(glob.editor.codeEditor, glob.typo);
+        window.onresize = resizeEditor;
+        resizeEditor();
     }
 
 	</script>
