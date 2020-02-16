@@ -29,5 +29,16 @@ class FileBackend:
         unquoteFilename = html.unescape(val['filename'])
         _assert(self.filename == unquoteFilename, 'inconsistent filename: expected "{}", got "{}"'.format(self.filename, val['filename']))
         self.check_file()
-        with open(self.filename, 'w', encoding='utf8') as outfile:
+
+        # read the file first
+        with open(self.filename, 'r', encoding='utf8') as infile:
+            backup = infile.read()
+
+        outfile = open(self.filename, 'w', encoding='utf8')
+        try:
             outfile.write(val['content'])
+        except Exception:
+            # try writing the old version...
+            outfile.truncate(0)
+            outfile.write(backup)
+        outfile.close()

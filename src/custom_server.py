@@ -9,6 +9,13 @@ from src.common_def import *
 from src.common_def import _assert
 import html
 
+def sanitize_nonascii(message):
+    content = map(lambda x : x.encode('latin1'),
+                  map(lambda x : chr(x) if x < 128 else '\\x{:x}'.format(x),
+                      message))
+    return b''.join(content)
+
+
 class NewHRH(SimpleHTTPRequestHandler):
 
     def __init__(self, *args, **kwargs):
@@ -44,7 +51,8 @@ class NewHRH(SimpleHTTPRequestHandler):
                 raise RuntimeError('unknown target: ' + repr(words))
 
         except Exception as e:
-            self.send_response(HTTPStatus.INTERNAL_SERVER_ERROR, repr(e))
+            # sanitize the response
+            self.send_response(HTTPStatus.INTERNAL_SERVER_ERROR, sanitize_nonascii(repr(e)))
             self.flush_headers()
             print('Failed to save changes to {}:\n{}'.format(self.fileBackend.filename, repr(e)))
             #print('sent failure response')

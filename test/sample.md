@@ -14,4 +14,4 @@ I can load my own CSS styles and access images as if this is compiled by Jekyll!
   <figcaption>Caption!</figcaption>
 </figure>
 
-中文支持
+中文支持 Test Chinese support
